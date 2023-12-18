@@ -81,7 +81,7 @@ int main()
 	} 
 
 	show_status(status);
-	printf("\nEnd of the game");
+	printf("\nEnd of the game\n\n");
 }
 
 GAME_STATUS* setup_game()
@@ -170,7 +170,7 @@ void show_status(GAME_STATUS* status)
 		printf("\nDuring your reign there were a total of %d deaths\n", status->total_deaths);
 		printf("\nDuring your reign there were a total of %d new comers\n", status->total_newcomers);
 
-		double popPercent = ((double) status->population / INITIAL_POPULATION) * 100;
+		double popPercent = 100 - (((double) status->population / INITIAL_POPULATION) * 100);
 		if (status->population > INITIAL_POPULATION)
 		{
 			printf("\nYour population increased %.2f %%\n", popPercent);
