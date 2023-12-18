@@ -1,2 +1,3 @@
 ﻿  hammurabi.cpp
+C:\Users\Julio Murta\source\repos\hammurabi\hammurabi\hammurabi.cpp(136,12): warning C4244: 'argumento': conversão de 'time_t' para 'unsigned int', possível perda de dados
   hammurabi.vcxproj -> C:\Users\Julio Murta\source\repos\hammurabi\x64\Debug\hammurabi.exe
