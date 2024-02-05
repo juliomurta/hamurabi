@@ -229,7 +229,7 @@ void cultivate_acres(GAME_STATUS* status)
 int save_progress(GAME_STATUS* status) 
 {
 	FILE* file = NULL;
-	errno_t err;
+	errno_t err = 0;
 
 	if (status == NULL || (err = fopen_s(&file, "gamedata.dat", "wb")) != 0)
 	{
@@ -297,10 +297,21 @@ int save_progress(GAME_STATUS* status)
 GAME_STATUS* load_progress(void)
 {
 	FILE* file = NULL;
-	errno_t err;
-	if ((err = fopen_s(&file, "gamedata.dat", "rb")) == 0)
+	GAME_STATUS* status = setup_new_game();
+	errno_t err = fopen_s(&file, "gamedata.dat", "rb");
+
+	if (file == NULL && err != 0)
 	{
 		printf("\nThere were an error while loading the game status.");
 		exit(1);
 	}
+
+	char game_status_binary[500];
+	if (fread(game_status_binary, 500, 1, file) != 0)
+	{
+		printf(game_status_binary);
+		exit(1);
+	}
+
+	return NULL;
 }
