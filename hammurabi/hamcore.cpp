@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include "hamcore.h"
 #include "hamutils.h"
+#include <stdlib.h>
+#include <string.h>
 
-GAME_STATUS* setup_game(void)
+GAME_STATUS* setup_new_game(void)
 {
 	GAME_STATUS* status = new GAME_STATUS();
 	status->starved_people = 0;
@@ -12,6 +14,7 @@ GAME_STATUS* setup_game(void)
 	status->harvested_bushels = 3;
 	status->destroyed_bushels = 200;
 	status->total_bushels = 3000;
+	status->year = 1;
 	status->acre_price = generate_random(ACRE_PRICE_MIN, ACRE_PRICE_MAX);
 
 	return status;
@@ -47,7 +50,7 @@ void show_status(GAME_STATUS* status)
 
 	if (status->total_acres <= 0)
 	{
-		printf("\nUnfortunately you dont have acres anymore to cultivate.\n");
+		printf("\nUnfortunately you dont have enough acres to cultivate.\n");
 	}
 
 	if (status->year > TOTAL_TURNS)
@@ -125,9 +128,17 @@ void update_values(GAME_STATUS* status)
 
 void negotiate_acres(GAME_STATUS* status)
 {
-	int acres;
+	int acres, valid_input = 0;
 	printf("\nHow many acres do you wish to buy or sell? (enter a negative amount to sell bushels)\n");
-	scanf_s("%d", &acres);
+	while (!valid_input)
+	{
+		valid_input = scanf_s("%d", &acres);
+		if (!valid_input)
+		{
+			printf("\nPlease type a valid number\n");
+			fflush(stdin);			
+		}
+	}	
 
 	if (acres > 0)
 	{
@@ -212,5 +223,84 @@ void cultivate_acres(GAME_STATUS* status)
 			status->total_bushels += cultivated_bushels - acres_to_plant;
 			valid_input = 1;
 		}
+	}
+}
+
+int save_progress(GAME_STATUS* status) 
+{
+	FILE* file = NULL;
+	errno_t err;
+
+	if (status == NULL || (err = fopen_s(&file, "gamedata.dat", "wb")) != 0)
+	{
+		printf("\nThere were an error while saving the game status.\n");
+		return 0;
+	}
+
+	char acre_price[5], 
+		 destroyed_bushels[5], 
+		 harvested_bushels[5], 
+		 new_comers[5], 
+		 population[5], 
+		 starved_people[5], 
+		 total_acres[5], 
+		 total_bushels[5], 
+		 total_deaths[5], 
+		 total_newcomers[5], 
+		 year[5];
+
+	_itoa_s(status->acre_price, acre_price, 10);
+	_itoa_s(status->destroyed_bushels, destroyed_bushels, 10);
+	_itoa_s(status->harvested_bushels, harvested_bushels, 10);
+	_itoa_s(status->new_comers, new_comers, 10);
+	_itoa_s(status->population, population, 10);
+	_itoa_s(status->starved_people, starved_people, 10);
+	_itoa_s(status->total_acres, total_acres, 10);
+	_itoa_s(status->total_bushels, total_bushels, 10);
+	_itoa_s(status->total_deaths, total_deaths, 10);
+	_itoa_s(status->total_newcomers, total_newcomers, 10);
+	_itoa_s(status->year, year, 10);
+
+	char game_status_binary[500] = "ACRE_PRICE=";
+	strcat_s(game_status_binary, sizeof(game_status_binary), acre_price);
+	strcat_s(game_status_binary, sizeof(game_status_binary), ";DBUSHELS=");
+	strcat_s(game_status_binary, sizeof(game_status_binary), destroyed_bushels);
+	strcat_s(game_status_binary, sizeof(game_status_binary), ";HBUSHELS=");
+	strcat_s(game_status_binary, sizeof(game_status_binary), harvested_bushels);
+	strcat_s(game_status_binary, sizeof(game_status_binary), ";NEWCMS=");
+	strcat_s(game_status_binary, sizeof(game_status_binary), new_comers);
+	strcat_s(game_status_binary, sizeof(game_status_binary), ";POP=");
+	strcat_s(game_status_binary, sizeof(game_status_binary), population);
+	strcat_s(game_status_binary, sizeof(game_status_binary), ";STVPPL=");
+	strcat_s(game_status_binary, sizeof(game_status_binary), starved_people);
+	strcat_s(game_status_binary, sizeof(game_status_binary), ";TACRE=");
+	strcat_s(game_status_binary, sizeof(game_status_binary), total_acres);
+	strcat_s(game_status_binary, sizeof(game_status_binary), ";TBUSHELS=");
+	strcat_s(game_status_binary, sizeof(game_status_binary), total_bushels);
+	strcat_s(game_status_binary, sizeof(game_status_binary), ";TDEATHS=");
+	strcat_s(game_status_binary, sizeof(game_status_binary), total_deaths);
+	strcat_s(game_status_binary, sizeof(game_status_binary), ";TNEWCMRS=");
+	strcat_s(game_status_binary, sizeof(game_status_binary), total_newcomers);
+	strcat_s(game_status_binary, sizeof(game_status_binary), ";YEAR=");
+	strcat_s(game_status_binary, sizeof(game_status_binary), year);
+
+	if (fwrite(game_status_binary, 1, 500, file) != 500) 
+	{
+		printf("\nThere were an error while saving the game status.");
+		return 0;
+	}
+
+	fclose(file);
+	return 1;
+}
+
+GAME_STATUS* load_progress(void)
+{
+	FILE* file = NULL;
+	errno_t err;
+	if ((err = fopen_s(&file, "gamedata.dat", "rb")) == 0)
+	{
+		printf("\nThere were an error while loading the game status.");
+		exit(1);
 	}
 }

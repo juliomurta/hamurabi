@@ -35,4 +35,6 @@ void feed_people(GAME_STATUS* status);
 void cultivate_acres(GAME_STATUS* status);
 void update_values(GAME_STATUS* status);
 void check_plague(GAME_STATUS* status);
-GAME_STATUS* setup_game(void);
+int save_progress(GAME_STATUS* status);
+GAME_STATUS* load_progress(void);
+GAME_STATUS* setup_new_game(void);
