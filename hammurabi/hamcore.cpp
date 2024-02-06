@@ -309,7 +309,77 @@ GAME_STATUS* load_progress(void)
 	char game_status_binary[500];
 	if (fread(game_status_binary, 500, 1, file) != 0)
 	{
-		printf(game_status_binary);
+		char *prop_next, *val_next;
+		const char *prop_delim = ";", *val_delim = "=";
+		char *prop_token = strtok_s(game_status_binary, prop_delim, &prop_next);
+
+		while (prop_token)
+		{
+			char* val_token = strtok_s(prop_token, val_delim, &val_next);	
+			while (val_token)
+			{				
+				if (strcmp(val_token, "ACRE_PRICE")) {
+					val_token = strtok_s(NULL, val_delim, &val_next);
+					status->acre_price = atoi(val_token);
+					continue;
+				}
+				else if (strcmp(val_token, "DBUSHELS")) {
+					val_token = strtok_s(NULL, val_delim, &val_next);
+					status->destroyed_bushels = atoi(val_token);
+					continue;
+				}
+				else if (strcmp(val_token, "HBUSHELS")) {
+					val_token = strtok_s(NULL, val_delim, &val_next);
+					status->harvested_bushels = atoi(val_token);
+					continue;
+				}
+				else if (strcmp(val_token, "NEWCMS")) {
+					val_token = strtok_s(NULL, val_delim, &val_next);
+					status->new_comers = atoi(val_token);
+					continue;
+				}
+				else if (strcmp(val_token, "POP")) {
+					val_token = strtok_s(NULL, val_delim, &val_next);
+					status->population = atoi(val_token);
+					continue;
+				}
+				else if (strcmp(val_token, "STVPPL")) {
+					val_token = strtok_s(NULL, val_delim, &val_next);
+					status->starved_people = atoi(val_token);
+					continue;
+				}
+				else if (strcmp(val_token, "TACRE")) {
+					val_token = strtok_s(NULL, val_delim, &val_next);
+					status->total_acres = atoi(val_token);
+					continue;
+				}
+				else if (strcmp(val_token, "TBUSHELS")) {
+					val_token = strtok_s(NULL, val_delim, &val_next);
+					status->total_bushels = atoi(val_token);
+					continue;
+				}
+				else if (strcmp(val_token, "TDEATHS")) {
+					val_token = strtok_s(NULL, val_delim, &val_next);
+					status->total_deaths = atoi(val_token);
+					continue;
+				}
+				else if (strcmp(val_token, "TNEWCMRS")) {
+					val_token = strtok_s(NULL, val_delim, &val_next);
+					status->total_newcomers = atoi(val_token);
+					continue;
+				}
+				else if (strcmp(val_token, "YEAR")) {
+					val_token = strtok_s(NULL, val_delim, &val_next);
+					status->year = atoi(val_token);
+					continue;
+				}
+			}
+
+			prop_token = strtok_s(NULL, prop_delim, &prop_next);
+		}
+
+
+		show_status(status);
 		exit(1);
 	}
 
