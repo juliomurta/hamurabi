@@ -309,79 +309,77 @@ GAME_STATUS* load_progress(void)
 	char game_status_binary[500];
 	if (fread(game_status_binary, 500, 1, file) != 0)
 	{
-		char *prop_next, *val_next;
-		const char *prop_delim = ";", *val_delim = "=";
+		int index = 0;
+		const char* prop_delim = ";";
+		char *keys_and_values[11], *prop_next;
 		char *prop_token = strtok_s(game_status_binary, prop_delim, &prop_next);
 
 		while (prop_token)
 		{
-			char* val_token = strtok_s(prop_token, val_delim, &val_next);	
-			while (val_token)
-			{				
-				if (strcmp(val_token, "ACRE_PRICE")) {
-					val_token = strtok_s(NULL, val_delim, &val_next);
-					status->acre_price = atoi(val_token);
-					continue;
-				}
-				else if (strcmp(val_token, "DBUSHELS")) {
-					val_token = strtok_s(NULL, val_delim, &val_next);
-					status->destroyed_bushels = atoi(val_token);
-					continue;
-				}
-				else if (strcmp(val_token, "HBUSHELS")) {
-					val_token = strtok_s(NULL, val_delim, &val_next);
-					status->harvested_bushels = atoi(val_token);
-					continue;
-				}
-				else if (strcmp(val_token, "NEWCMS")) {
-					val_token = strtok_s(NULL, val_delim, &val_next);
-					status->new_comers = atoi(val_token);
-					continue;
-				}
-				else if (strcmp(val_token, "POP")) {
-					val_token = strtok_s(NULL, val_delim, &val_next);
-					status->population = atoi(val_token);
-					continue;
-				}
-				else if (strcmp(val_token, "STVPPL")) {
-					val_token = strtok_s(NULL, val_delim, &val_next);
-					status->starved_people = atoi(val_token);
-					continue;
-				}
-				else if (strcmp(val_token, "TACRE")) {
-					val_token = strtok_s(NULL, val_delim, &val_next);
-					status->total_acres = atoi(val_token);
-					continue;
-				}
-				else if (strcmp(val_token, "TBUSHELS")) {
-					val_token = strtok_s(NULL, val_delim, &val_next);
-					status->total_bushels = atoi(val_token);
-					continue;
-				}
-				else if (strcmp(val_token, "TDEATHS")) {
-					val_token = strtok_s(NULL, val_delim, &val_next);
-					status->total_deaths = atoi(val_token);
-					continue;
-				}
-				else if (strcmp(val_token, "TNEWCMRS")) {
-					val_token = strtok_s(NULL, val_delim, &val_next);
-					status->total_newcomers = atoi(val_token);
-					continue;
-				}
-				else if (strcmp(val_token, "YEAR")) {
-					val_token = strtok_s(NULL, val_delim, &val_next);
-					status->year = atoi(val_token);
-					continue;
-				}
-			}
-
+			keys_and_values[index] = (char*) malloc(strlen(prop_token) + 1);
+			strcpy_s(keys_and_values[index], strlen(prop_token) + 1, prop_token);
 			prop_token = strtok_s(NULL, prop_delim, &prop_next);
+			index++;
 		}
 
+		const char* val_delim = "=";
 
-		show_status(status);
-		exit(1);
+		for (index = 0; index < 11;  index++)
+		{
+			char* val_next;
+			char* val_token = strtok_s(keys_and_values[index], val_delim, &val_next);
+
+			if (strcmp(val_token, "ACRE_PRICE") == 0)
+			{
+				status->acre_price = atoi(val_next);
+			}
+			else if (strcmp(val_token, "DBUSHELS") == 0)
+			{
+				status->destroyed_bushels = atoi(val_next);
+			}
+
+			else if (strcmp(val_token, "HBUSHELS") == 0)
+			{
+				status->harvested_bushels = atoi(val_next);
+			}
+			else if (strcmp(val_token, "NEWCMS") == 0)
+			{
+				status->new_comers = atoi(val_next);
+			}
+			else if (strcmp(val_token, "POP") == 0)
+			{
+				status->population = atoi(val_next);
+			}
+			else if (strcmp(val_token, "STVPPL") == 0)
+			{
+				status->starved_people = atoi(val_next);
+			}
+			else if (strcmp(val_token, "TACRE") == 0)
+			{
+				status->total_acres = atoi(val_next);
+			}
+			else if (strcmp(val_token, "TBUSHELS") == 0)
+			{
+				status->total_bushels = atoi(val_next);
+			}
+			else if (strcmp(val_token, "TDEATHS") == 0)
+			{
+				status->total_deaths = atoi(val_next);
+			}
+			else if (strcmp(val_token, "TNEWCMRS") == 0)
+			{
+				status->total_newcomers = atoi(val_next);
+			}
+			else if (strcmp(val_token, "YEAR") == 0)
+			{
+				status->year = atoi(val_next);
+			}
+
+			val_token = strtok_s(NULL, val_delim, &val_next);
+		}
 	}
 
-	return NULL;
+	fclose(file);
+
+	return status;
 }

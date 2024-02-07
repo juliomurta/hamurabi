@@ -22,7 +22,7 @@ GAME_STATUS* initial_options(void)
 	{
 		printf("\n>>> ");
 		valid_input = scanf_s("%d", &option);
-		if (!valid_input || (valid_input = (option == 1 || option == 2)))
+		if (!valid_input || !(valid_input = (option == 1 || option == 2)))
 		{
 			printf("\nPlease type a valid number\n");
 		}
@@ -63,38 +63,6 @@ void execute_game(GAME_STATUS* status)
 			break;
 		}
 
-		if (turn > status->year)
-		{
-			char save;
-			int valid_input = 0;
-
-			printf("\nDo you wish to save your game progress? [y/n]");
-			fseek(stdin, 0, SEEK_END);
-
-			while (!valid_input)
-			{
-				printf("\n>>> ");
-				valid_input = scanf_s("%c", &save, 1);
-
-				if (!valid_input || (valid_input = (save == 'y' || save == 'Y' || save == 'n' || save == 'N')))
-				{
-					printf("\nPlease type a valid option\n");
-				}
-
-				fseek(stdin, 0, SEEK_END);
-			}
-
-			if (save == 'y' || save == 'Y')
-			{
-				if (save_progress(status))
-				{
-					printf("\nProgress saved successfuly!!!\n");
-				}
-
-				exit(1);
-			}
-		}
-
 		show_status(status);
 		negotiate_acres(status);
 
@@ -108,6 +76,40 @@ void execute_game(GAME_STATUS* status)
 		check_plague(status);
 
 		status->year = turn++;
+
+		if (turn > status->year)
+		{
+			char save;
+			int valid_input = 0;
+
+			printf("\nDo you wish to save your game progress? [y/n]");
+			fseek(stdin, 0, SEEK_END);
+
+			while (!valid_input)
+			{
+				printf("\n>>> ");
+				valid_input = scanf_s("%c", &save, 1);
+
+				if (!valid_input || !(valid_input = (save == 'y' || save == 'Y' || save == 'n' || save == 'N')))
+				{
+					printf("\nPlease type a valid option\n");
+				}
+
+				fseek(stdin, 0, SEEK_END);
+			}
+
+			if (save == 'y' || save == 'Y')
+			{
+				if (save_progress(status))
+				{
+					printf("\n**** Progress saved successfuly!!! ****\n");
+					printf("\n Your current status is: \n");
+					show_status(status);
+				}
+
+				exit(1);
+			}
+		}
 	}
 
 	show_status(status);
