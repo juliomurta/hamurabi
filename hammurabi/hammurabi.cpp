@@ -48,16 +48,16 @@ void execute_game(GAME_STATUS* status)
 {
 	signed short turn = status->year;
 
+	status->total_bushels -= status->destroyed_bushels;
+
+	status->population -= status->starved_people;
+	status->total_deaths += status->starved_people;
+
+	status->population += status->new_comers;
+	status->total_newcomers += status->new_comers;
+
 	while (turn <= TOTAL_TURNS)
 	{
-		status->total_bushels -= status->destroyed_bushels;
-
-		status->population -= status->starved_people;
-		status->total_deaths += status->starved_people;
-
-		status->population += status->new_comers;
-		status->total_newcomers += status->new_comers;
-
 		if (status->population <= 0 || status->total_acres <= 0)
 		{
 			break;

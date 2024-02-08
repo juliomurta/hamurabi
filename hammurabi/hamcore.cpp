@@ -35,7 +35,16 @@ void show_status(GAME_STATUS* status)
 	printf("Hammurabi: I beg to report to you,\n");
 	printf("In Year %i, %d people starved.\n", status->year, status->starved_people);
 	printf("%d people came to the city.\n", status->new_comers);
-	printf("The city population is now %d.\n", status->population);
+
+	if (status->population > 0)
+	{
+		printf("The city population is now %d.\n", status->population);
+	} 
+	else
+	{
+		printf("The entire city population died.\n");
+	}
+
 	printf("The city now owns %d acres.\n", status->total_acres);
 	printf("You harvested %d bushels per acre.\n", status->harvested_bushels);
 	printf("Rats ate %d bushels.\n", status->destroyed_bushels);
@@ -114,6 +123,7 @@ void update_values(GAME_STATUS* status)
 
 	int newcomers = generate_random(NEWCOMERS_MIN, NEWCOMERS_MAX);
 	status->new_comers = newcomers;
+	status->population += newcomers;
 	status->total_newcomers += newcomers;
 
 	if (5 == generate_random(1, 5))
